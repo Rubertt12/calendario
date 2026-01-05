@@ -31,25 +31,20 @@
         @media (max-width: 900px) {
             .app-shell { grid-template-columns: 1fr; }
             header { flex-direction: column; gap: 15px; text-align: center; }
-            .sidebar { order: 2; margin-top: 10px; }
         }
 
         header { grid-column: 1 / -1; background: white; border-radius: 20px; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         
         /* Ajuste do Clima */
-        #wInfo { font-size: 14px; font-weight: 900; color: #475569; background: #f1f5f9; padding: 5px 12px; border-radius: 50px; display: inline-block; }
+        #wInfo { font-size: 13px; font-weight: 800; color: #475569; background: #f1f5f9; padding: 6px 14px; border-radius: 50px; }
 
         .main-cal { background: white; border-radius: 20px; padding: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
         .wk-day { text-align: center; color: #cbd5e1; font-weight: 900; font-size: 10px; padding: 5px 0; }
-
         .day { background: #fff; border: 1px solid #f1f5f9; border-radius: 8px; padding: 4px; cursor: pointer; min-height: 95px; display: flex; flex-direction: column; position: relative; }
         .day.today { border: 2.5px solid var(--accent); }
         .day-num { font-weight: 900; font-size: 14px; display: flex; justify-content: space-between; }
-        .holiday-tag { font-size: 7px; color: #ef4444; font-weight: 800; background: #fee2e2; padding: 2px; border-radius: 3px; margin-top: 2px; text-transform: uppercase; }
-
         .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-        
         .legend-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px; display: flex; justify-content: center; gap: 12px; font-size: 10px; font-weight: 700; border-top: 1px solid #e2e8f0; z-index: 900; flex-wrap: wrap; }
         .ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: flex-end; }
         .modal { background: white; width: 100%; max-width: 500px; border-radius: 25px 25px 0 0; padding: 20px; }
@@ -59,15 +54,14 @@
 
 <div id="authScreen">
     <div class="auth-card">
-        <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" width="50">
-        <h2 style="margin: 10px 0">Planner Familiar</h2>
-        <div class="input-group"><input type="email" id="email" placeholder="Seu e-mail"></div>
+        <h2 style="margin: 0 0 20px 0">Planner Familiar</h2>
+        <div class="input-group"><input type="email" id="email" placeholder="E-mail"></div>
         <div class="input-group">
-            <input type="password" id="password" placeholder="Sua senha">
+            <input type="password" id="password" placeholder="Senha">
             <button class="eye-btn" onclick="togglePass()">👁️</button>
         </div>
         <button class="auth-btn" onclick="handleAuth()">ENTRAR</button>
-        <button onclick="resetPass()" style="margin-top:15px; background:none; border:none; color:#2563eb; text-decoration:underline; cursor:pointer; font-size:13px">Esqueci minha senha</button>
+        <button onclick="resetPass()" style="margin-top:15px; background:none; border:none; color:#2563eb; text-decoration:underline; font-size:12px">Esqueci a senha</button>
     </div>
 </div>
 
@@ -78,12 +72,12 @@
             <select id="selY" onchange="render()" style="background:var(--accent); color:white; border:none; padding:4px 8px; border-radius:6px; font-weight:900;"></select>
         </div>
         
-        <div id="wInfo">Carregando clima...</div>
+        <div id="wInfo">Buscando clima...</div>
 
         <div style="display:flex; gap:8px">
-            <button style="border:none; background:#f1f5f9; padding:10px; border-radius:12px; cursor:pointer" onclick="setMode('work')">💼</button>
-            <button style="border:none; background:#f1f5f9; padding:10px; border-radius:12px; cursor:pointer" onclick="setMode('home')">🏠</button>
-            <button onclick="logout()" style="border:none; background:#fff1f2; color:#ef4444; padding:10px; border-radius:12px; font-weight:800; cursor:pointer">Sair</button>
+            <button class="auth-btn" style="padding:10px; margin:0" onclick="setMode('work')">💼</button>
+            <button class="auth-btn" style="padding:10px; margin:0" onclick="setMode('home')">🏠</button>
+            <button onclick="logout()" style="border:none; background:none; color:#ef4444; font-weight:800;">Sair</button>
         </div>
     </header>
 
@@ -104,7 +98,6 @@
 
 <div class="legend-bar">
     <div>🌑 Nova</div><div>🌓 Cresc.</div><div>🌕 Cheia</div><div>🌗 Mingu.</div>
-    <div><span style="color:#ef4444">■</span> Feriado</div>
     <div><div class="dot" style="display:inline-block"></div> Tarefa</div>
 </div>
 
@@ -136,40 +129,41 @@
     let cloudData = {};
     let activeKey = "";
     const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-    const holidays = { "1-0-2026": "Ano Novo", "16-1-2026": "Carnaval", "17-1-2026": "Carnaval", "3-3-2026": "Sexta Paixão", "21-3-2026": "Tiradentes", "1-4-2026": "Dia do Trabalho", "4-5-2026": "Corpus Christi", "7-8-2026": "Independência", "12-9-2026": "Nsa. Aparecida", "2-10-2026": "Finados", "15-10-2026": "Procl. República", "20-10-2026": "Consciência Negra", "25-11-2026": "Natal" };
 
-    // FUNÇÃO DE CLIMA MELHORADA PARA CELULAR
-    async function fetchWeather() {
+    // FUNÇÃO DE CLIMA DEFINITIVA (GEOLOCALIZAÇÃO DO CELULAR)
+    function fetchWeather() {
         const info = document.getElementById('wInfo');
-        try {
-            // Tenta pegar localização por IP (mais aceito em celulares que o GPS direto)
-            const locRes = await fetch('https://ipapi.co/json/');
-            const loc = await locRes.json();
-            
-            if(loc.latitude) {
-                const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current_weather=true`);
-                const w = await wRes.json();
-                const temp = Math.round(w.current_weather.temperature);
-                info.innerHTML = `☀️ ${temp}°C em ${loc.city}`;
-            } else {
-                info.innerText = "Clima indisponível";
-            }
-        } catch(e) {
-            info.innerText = "Clima indisponível";
-            console.log("Erro clima:", e);
+        
+        if (!navigator.geolocation) {
+            info.innerText = "GPS não suportado";
+            return;
         }
+
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            try {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                const w = await wRes.json();
+                info.innerHTML = `☀️ ${Math.round(w.current_weather.temperature)}°C agora`;
+            } catch(e) {
+                info.innerText = "Erro ao carregar clima";
+            }
+        }, () => {
+            info.innerText = "Permita o GPS para ver o clima";
+        });
     }
 
     function handleAuth() {
         const e = document.getElementById('email').value, p = document.getElementById('password').value;
-        if(!e || !p) return alert("Preencha e-mail e senha");
+        if(!e || !p) return;
         auth.signInWithEmailAndPassword(e, p).catch(() => auth.createUserWithEmailAndPassword(e, p));
     }
 
     function resetPass() {
         const e = document.getElementById('email').value;
-        if(!e) return alert("Digite seu e-mail acima primeiro");
-        auth.sendPasswordResetEmail(e).then(() => alert("Link enviado ao seu e-mail!")).catch(err => alert("Erro: " + err.message));
+        if(!e) return alert("Digite o e-mail primeiro");
+        auth.sendPasswordResetEmail(e).then(() => alert("Link enviado!")).catch(err => alert(err.message));
     }
 
     auth.onAuthStateChanged(user => {
@@ -181,7 +175,7 @@
                 snap.forEach(doc => cloudData[doc.id] = doc.data().items);
                 render();
             });
-            fetchWeather(); // Chama o clima ao logar
+            fetchWeather();
         } else {
             document.getElementById('authScreen').style.display = 'flex';
         }
@@ -207,12 +201,10 @@
         for(let d=1; d<=last; d++) {
             const key = `${d}-${m}-${y}`;
             const tasks = (cloudData[key] || []).filter(t => t.mode === mode);
-            const holiday = holidays[key];
             const dayEl = document.createElement('div');
             dayEl.className = `day ${new Date().getDate()==d && new Date().getMonth()==m && new Date().getFullYear()==y ? 'today' : ''}`;
             dayEl.onclick = () => openM(key, d);
             dayEl.innerHTML = `<div class="day-num">${d} <span>${getMoon(d,m,y)}</span></div>
-                ${holiday ? `<div class="holiday-tag">${holiday}</div>` : ''}
                 <div style="margin-top:auto; display:flex; gap:2px">${tasks.map(() => `<div class="dot"></div>`).join('')}</div>`;
             grid.appendChild(dayEl);
             tasks.forEach(t => side.innerHTML += `<div style="font-size:12px; margin-bottom:8px; border-left:3px solid var(--accent); padding-left:8px"><b>Dia ${d}:</b> ${t.desc}</div>`);
