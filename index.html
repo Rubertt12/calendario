@@ -3,185 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Planner Pro 2026</title>
+    <title>Planner Familiar Rubertt</title>
+    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#db2777">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3652/3652191.png">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --work: #2563eb; --home: #db2777;
-            --work-bg: #f1f5f9; --home-bg: #fff1f2;
-            --accent: var(--home);
-        }
-
+        :root { --work: #2563eb; --home: #db2777; --work-bg: #f1f5f9; --home-bg: #fff1f2; --accent: var(--home); }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; min-height: 100vh; transition: background 0.4s ease; overflow: hidden; }
+        body, html { margin: 0; padding: 0; min-height: 100vh; transition: background 0.4s ease; overflow-x: hidden; }
         body.mode-work { background: var(--work-bg); --accent: var(--work); }
         body.mode-home { background: var(--home-bg); --accent: var(--home); }
 
-        .app-shell {
-            display: grid; gap: 12px; padding: 12px; height: 100vh;
-            grid-template-columns: 1fr 320px; grid-template-rows: auto 1fr auto;
-        }
+        #authScreen { position: fixed; inset: 0; background: white; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-card { width: 100%; max-width: 400px; text-align: center; background: #f8fafc; padding: 40px; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .auth-card input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; outline: none; }
+        .auth-btn { width: 100%; padding: 16px; background: var(--home); color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; margin-top: 10px; }
 
-        @media (max-width: 1000px) {
-            .app-shell { display: block; height: auto; overflow-y: auto; }
-            body, html { overflow-y: auto; height: auto; }
-            .sidebar { margin-top: 15px; }
-        }
+        .app-shell { display: grid; gap: 12px; padding: 12px; height: 100vh; grid-template-columns: 1fr 320px; grid-template-rows: auto 1fr auto; display: none; }
+        @media (max-width: 1000px) { .app-shell { display: block; height: auto; } .sidebar { margin-top: 15px; } }
 
-        header {
-            grid-column: 1 / -1; background: white; border-radius: 16px;
-            padding: 15px 25px; display: flex; justify-content: space-between;
-            align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 15px;
-        }
-
-        .title-area { display: flex; align-items: center; gap: 10px; }
-        .year-select { background: var(--accent); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 900; cursor: pointer; }
-
-        .weather-display { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 15px; border-radius: 50px; border: 1px solid #e2e8f0; }
+        header { grid-column: 1 / -1; background: white; border-radius: 16px; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 15px; }
+        .year-select { background: var(--accent); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 900; }
         
-        .mode-selector { display: flex; background: #f1f5f9; padding: 5px; border-radius: 12px; gap: 5px; }
-        .mode-btn { border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 900; font-size: 11px; transition: 0.3s; color: #94a3b8; background: transparent; }
-        body.mode-work .btn-work { background: white; color: var(--work); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        body.mode-home .btn-home { background: white; color: var(--home); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-
         .main-cal { background: white; border-radius: 16px; padding: 10px; display: grid; grid-template-rows: 30px 1fr; overflow: hidden; }
-        .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; height: 100%; }
+        .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
         .wk-day { text-align: center; color: #cbd5e1; font-weight: 900; font-size: 10px; text-transform: uppercase; }
 
-        .day { background: #fff; border: 1px solid #f1f5f9; border-radius: 10px; padding: 8px; cursor: pointer; display: flex; flex-direction: column; transition: 0.2s; position: relative; min-height: 80px; }
-        .day.today { border: 2.5px solid #1e293b; background: #f8fafc; }
-        .day.holiday-bg { background: #fff1f2; }
+        .day { background: #fff; border: 1px solid #f1f5f9; border-radius: 10px; padding: 8px; cursor: pointer; display: flex; flex-direction: column; min-height: 90px; position: relative; }
+        .day.today { border: 2.5px solid #1e293b; }
         .day-num { font-weight: 900; font-size: 16px; }
-        .day-moon { font-size: 10px; margin-left: 5px; }
 
         .sidebar { background: white; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); max-height: calc(100vh - 100px); overflow-y: auto; }
         .side-title { font-size: 11px; font-weight: 900; color: #cbd5e1; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; text-transform: uppercase; margin-bottom: 10px; }
         
-        .moon-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .moon-item { font-size: 11px; font-weight: 700; background: #f8fafc; padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 5px; }
-
         .agenda-item { padding: 10px; border-radius: 10px; background: #f8fafc; border-left: 4px solid var(--accent); margin-bottom: 8px; font-size: 12px; }
         .agenda-item b { color: var(--accent); font-size: 10px; display: block; }
-        .hol-card { padding: 8px; border-radius: 8px; font-size: 11px; border-left: 4px solid #fb7185; background: #fff1f2; margin-bottom: 5px; color: #991b1b; }
 
-        .toast { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 15px 25px; border-radius: 12px; display: none; z-index: 9999; border-left: 5px solid var(--accent); }
-        .ov { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); z-index: 999; justify-content: center; align-items: center; padding: 15px; }
-        .modal { background: white; width: 850px; height: 500px; border-radius: 24px; display: flex; overflow: hidden; }
-        .m-left { flex: 1.2; padding: 35px; background: #fcfcfd; overflow-y: auto; border-right: 1px solid #eee; }
-        .m-right { flex: 0.8; padding: 35px; display: flex; flex-direction: column; }
-        .btn-save { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 14px; font-weight: 900; cursor: pointer; width: 100%; margin-top: auto; }
+        .ov { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); z-index: 999; justify-content: center; align-items: center; padding: 15px; }
+        .modal { background: white; width: 850px; max-width: 95%; height: 500px; border-radius: 24px; display: flex; overflow: hidden; }
+        .m-left { flex: 1.2; padding: 30px; overflow-y: auto; border-right: 1px solid #eee; }
+        .m-right { flex: 0.8; padding: 30px; display: flex; flex-direction: column; }
     </style>
 </head>
 <body class="mode-home">
 
-<script>
-    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
-</script>
+<div id="authScreen">
+    <div class="auth-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" width="80" style="margin-bottom:20px">
+        <h2 style="margin:0">Planner Familiar</h2>
+        <p style="color:#64748b; font-size:14px">Digite o e-mail e senha do casal para entrar.</p>
+        <input type="email" id="email" placeholder="E-mail">
+        <input type="password" id="password" placeholder="Senha">
+        <button class="auth-btn" onclick="handleAuth()">ACESSAR CALENDÁRIO</button>
+    </div>
+</div>
 
-<div class="app-shell">
+<div class="app-shell" id="appMain">
     <header>
         <div class="title-area">
-            <select id="selM" onchange="render()" style="border:none; background:transparent; font-size:22px; font-weight:900; color:#1e293b; cursor:pointer; outline:none;"></select>
+            <select id="selM" onchange="render()" style="border:none; background:transparent; font-size:22px; font-weight:900; outline:none;"></select>
             <select id="selY" onchange="changeYear()" class="year-select"></select>
         </div>
-        <div class="weather-display">
-            <span id="mainWIcon">☀️</span> <span id="mainWTemp" style="font-weight:900">--°</span> 
-            <span id="mainWLoc" style="font-size: 10px; color: #64748b; font-weight: 700;">...</span>
+        <div style="display:flex; align-items:center; gap:10px; background:#f1f5f9; padding:8px 15px; border-radius:50px; font-size:13px">
+            <span id="wTemp">--°</span> • <span id="wLoc">...</span>
         </div>
-        <div id="notifyStatus" onclick="requestNotify()" style="cursor:pointer; font-size:10px; font-weight:800; color:#94a3b8; background:#f1f5f9; padding:5px 10px; border-radius:20px">🔔 ALERTAS</div>
-        <div class="mode-selector">
-            <button class="mode-btn btn-work" onclick="setMode('work')">💼 TRABALHO</button>
-            <button class="mode-btn btn-home" onclick="setMode('home')">🏠 PESSOAL</button>
+        <div style="display:flex; background:#f1f5f9; padding:5px; border-radius:12px; gap:5px">
+            <button class="mode-btn btn-work" onclick="setMode('work')" style="border:none; padding:8px 15px; border-radius:8px; font-weight:800; cursor:pointer">💼 TRABALHO</button>
+            <button class="mode-btn btn-home" onclick="setMode('home')" style="border:none; padding:8px 15px; border-radius:8px; font-weight:800; cursor:pointer">🏠 PESSOAL</button>
         </div>
+        <button onclick="logout()" style="border:none; background:none; color:#94a3b8; font-weight:800; cursor:pointer">Sair</button>
     </header>
 
     <main class="main-cal">
-        <div class="grid" style="grid-template-rows: auto; height: auto; margin-bottom: 5px;">
-            <div class="wk-day">Dom</div><div class="wk-day">Seg</div><div class="wk-day">Ter</div><div class="wk-day">Qua</div><div class="wk-day">Qui</div><div class="wk-day">Sex</div><div class="wk-day">Sáb</div>
-        </div>
+        <div class="grid" style="margin-bottom:10px"><div class="wk-day">Dom</div><div class="wk-day">Seg</div><div class="wk-day">Ter</div><div class="wk-day">Qua</div><div class="wk-day">Qui</div><div class="wk-day">Sex</div><div class="wk-day">Sáb</div></div>
         <div class="grid" id="mainGrid"></div>
     </main>
 
     <aside class="sidebar">
         <div>
             <div class="side-title">🌙 Fases da Lua</div>
-            <div class="moon-legend">
-                <div class="moon-item"><span>🌑</span> Nova</div><div class="moon-item"><span>🌓</span> Cres.</div>
-                <div class="moon-item"><span>🌕</span> Cheia</div><div class="moon-item"><span>🌗</span> Ming.</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; font-size:11px">
+                <div style="background:#f8fafc; padding:8px; border-radius:8px">🌑 Nova</div>
+                <div style="background:#f8fafc; padding:8px; border-radius:8px">🌓 Cres.</div>
+                <div style="background:#f8fafc; padding:8px; border-radius:8px">🌕 Cheia</div>
+                <div style="background:#f8fafc; padding:8px; border-radius:8px">🌗 Ming.</div>
             </div>
         </div>
-        <div style="flex: 1; display: flex; flex-direction: column;">
-            <div class="side-title">📝 Agenda do Mês</div>
-            <div id="sideAgenda" style="overflow-y: auto; flex: 1;"></div>
-        </div>
-        <div>
-            <div class="side-title">📅 Feriados</div>
-            <div id="sideHols" style="max-height: 100px; overflow-y: auto;"></div>
+        <div style="flex:1">
+            <div class="side-title">📝 Agenda Compartilhada</div>
+            <div id="sideAgenda"></div>
         </div>
     </aside>
-
-    <footer style="grid-column: 1/-1; text-align: center; font-size: 10px; font-weight: 800; color: #94a3b8; padding: 5px;">
-        PLANNER PRO PWA • <span id="footerYear">2026</span>
-    </footer>
 </div>
-
-<div id="toast" class="toast"></div>
 
 <div id="ov" class="ov" onclick="closeM()">
     <div class="modal" onclick="event.stopPropagation()">
         <div class="m-left">
-            <h2 id="mDayTitle" style="margin:0; font-size: 2rem; letter-spacing: -1.5px;">--</h2>
-            <div id="taskList" style="margin-top:25px"></div>
+            <h2 id="mDayTitle" style="margin:0">--</h2>
+            <div id="taskList" style="margin-top:20px"></div>
         </div>
         <div class="m-right">
-            <h4>Novo Agendamento</h4>
-            <input type="time" id="fTime" value="09:00" style="width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:2px solid #f1f5f9; font-weight:800;">
-            <textarea id="fDesc" placeholder="Descrição..." rows="5" style="width:100%; padding:14px; margin-bottom:20px; border-radius:12px; border:2px solid #f1f5f9; resize:none;"></textarea>
-            <button class="btn-save" onclick="save()">SALVAR</button>
-            <button onclick="closeM()" style="background:none; border:none; color:#94a3b8; margin-top:15px; cursor:pointer; width:100%; font-weight:700;">FECHAR</button>
+            <h4>Adicionar Registro</h4>
+            <input type="time" id="fTime" value="09:00" style="padding:12px; border-radius:10px; border:2px solid #f1f5f9; margin-bottom:10px; outline:none">
+            <textarea id="fDesc" placeholder="O que precisam anotar?" rows="4" style="padding:12px; border-radius:10px; border:2px solid #f1f5f9; resize:none; outline:none"></textarea>
+            <button class="auth-btn" onclick="save()">SALVAR PARA AMBOS</button>
+            <button onclick="closeM()" style="background:none; border:none; margin-top:10px; cursor:pointer; color:#94a3b8; font-weight:700">Cancelar</button>
         </div>
     </div>
 </div>
 
 <script>
+    // SUAS CHAVES DO FIREBASE
+    const firebaseConfig = {
+        apiKey: "AIzaSyBP0RFIOKHETENleBmab90O6c1IOcl-IeQ",
+        authDomain: "planner-familiar-6637d.firebaseapp.com",
+        projectId: "planner-familiar-6637d",
+        storageBucket: "planner-familiar-6637d.firebasestorage.app",
+        messagingSenderId: "419723199466",
+        appId: "1:419723199466:web:6f4665a04220e2aebea893"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
     let mode = 'home';
-    let db = JSON.parse(localStorage.getItem('planner_pwa_v2')) || {};
-    let holidaysData = {};
-    let globalTemp = 24;
+    let cloudData = {};
     let activeKey = "";
     const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 
-    async function init() {
+    function handleAuth() {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        if(!email || !pass) return alert("Preencha e-mail e senha");
+        auth.signInWithEmailAndPassword(email, pass).catch(() => auth.createUserWithEmailAndPassword(email, pass));
+    }
+
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('appMain').style.display = 'grid';
+            startSync();
+        } else {
+            document.getElementById('authScreen').style.display = 'flex';
+            document.getElementById('appMain').style.display = 'none';
+        }
+    });
+
+    function logout() { auth.signOut(); }
+
+    function startSync() {
+        db.collection("planner").onSnapshot(snap => {
+            cloudData = {};
+            snap.forEach(doc => cloudData[doc.id] = doc.data().items);
+            render();
+        });
+    }
+
+    function init() {
         const sM = document.getElementById('selM'), sY = document.getElementById('selY');
         months.forEach((m,i) => sM.innerHTML += `<option value="${i}">${m}</option>`);
         for(let y=2024; y<=2030; y++) sY.innerHTML += `<option value="${y}">${y}</option>`;
         sM.value = new Date().getMonth(); sY.value = 2026;
-        await fetchClimateAndHols();
-        render();
-        setInterval(checkAlerts, 60000); 
+        fetchClimate();
     }
 
-    async function fetchClimateAndHols() {
-        const yr = document.getElementById('selY').value;
-        document.getElementById('footerYear').innerText = yr;
+    async function fetchClimate() {
         try {
-            const locRes = await fetch('https://ipapi.co/json/');
-            const loc = await locRes.json();
-            document.getElementById('mainWLoc').innerText = loc.city;
-            const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current_weather=true`);
-            const w = await wRes.json();
-            globalTemp = Math.round(w.current_weather.temperature);
-            document.getElementById('mainWTemp').innerText = `${globalTemp}°`;
-            const holRes = await fetch(`https://brasilapi.com.br/api/feriados/v1/${yr}`);
-            const hols = await holRes.json();
-            holidaysData = {};
-            hols.forEach(h => {
-                const d = new Date(h.date + 'T00:00:00');
-                holidaysData[`${d.getDate()}-${d.getMonth()}`] = h.name;
-            });
-        } catch (e) {}
+            const loc = await (await fetch('https://ipapi.co/json/')).json();
+            document.getElementById('wLoc').innerText = loc.city;
+            const w = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current_weather=true`)).json();
+            document.getElementById('wTemp').innerText = Math.round(w.current_weather.temperature) + '°';
+        } catch(e){}
     }
 
     function getMoon(d, m, y) {
@@ -195,87 +196,59 @@
         return "";
     }
 
-    function checkAlerts() {
-        const now = new Date();
-        for (let key in db) {
-            db[key].forEach(task => {
-                const [d, m, y] = key.split('-').map(Number);
-                const [hh, mm] = task.time.split(':').map(Number);
-                const taskDate = new Date(y, m, d, hh, mm);
-                const diffHours = (taskDate - now) / (1000 * 60 * 60);
-                if (diffHours > 23.98 && diffHours < 24) sendNotify(`AMANHÃ: ${task.desc}`, task.time);
-                if (diffHours > 1.98 && diffHours < 2) sendNotify(`EM 2 HORAS: ${task.desc}`, task.time);
-            });
-        }
-    }
-
-    function sendNotify(title, time) {
-        if (Notification.permission === "granted") new Notification(title, { body: `Às ${time}` });
-        const toast = document.getElementById('toast');
-        toast.innerHTML = `<b>${title}</b><br>Horário: ${time}`;
-        toast.style.display = 'block'; setTimeout(() => toast.style.display = 'none', 8000);
-    }
-
-    function requestNotify() {
-        Notification.requestPermission().then(p => {
-            document.getElementById('notifyStatus').innerText = p === 'granted' ? '✅ ALERTAS OK' : '❌ BLOQUEADO';
-        });
-    }
-
-    function changeYear() { fetchClimateAndHols().then(render); }
-    function setMode(m) { mode = m; document.body.className = `mode-${m}`; render(); }
-
     function render() {
-        const grid = document.getElementById('mainGrid'), sideHols = document.getElementById('sideHols'), sideAgenda = document.getElementById('sideAgenda');
+        const grid = document.getElementById('mainGrid'), side = document.getElementById('sideAgenda');
         const m = parseInt(document.getElementById('selM').value), y = parseInt(document.getElementById('selY').value);
-        grid.innerHTML = ''; sideHols.innerHTML = ''; sideAgenda.innerHTML = '';
+        grid.innerHTML = ''; side.innerHTML = '';
         const first = new Date(y, m, 1).getDay(), last = new Date(y, m+1, 0).getDate();
-        for(let i=0; i<first; i++) grid.innerHTML += `<div class="day" style="background:none; border:none"></div>`;
-        let monthTasks = [];
+        for(let i=0; i<first; i++) grid.innerHTML += `<div></div>`;
         for(let d=1; d<=last; d++) {
-            const key = `${d}-${m}-${y}`, hol = holidaysData[`${d}-${m}`], tasks = (db[key] || []).filter(t => t.mode === mode);
-            if(hol) sideHols.innerHTML += `<div class="hol-card"><b>${d}/${m+1}:</b> ${hol}</div>`;
-            tasks.forEach(t => monthTasks.push({ day: d, ...t }));
+            const key = `${d}-${m}-${y}`;
+            const tasks = (cloudData[key] || []).filter(t => t.mode === mode);
             const dayEl = document.createElement('div');
-            dayEl.className = `day ${d===new Date().getDate() && m===new Date().getMonth() && y===new Date().getFullYear() ? 'today' : ''} ${hol ? 'holiday-bg' : ''}`;
+            dayEl.className = 'day';
             dayEl.onclick = () => openM(key, d);
-            dayEl.innerHTML = `<div style="display:flex; justify-content:space-between"><span class="day-num">${d}<span class="day-moon">${getMoon(d,m,y)}</span></span><span style="font-size:9px; color:#94a3b8">${globalTemp + (d%3-1)}°</span></div>
-                <div style="margin-top:auto">${tasks.slice(0,2).map(t => `<div style="font-size:8px; background:var(--accent); color:white; padding:1px 4px; border-radius:4px; margin-top:2px; overflow:hidden">${t.time} ${t.desc}</div>`).join('')}</div>`;
+            dayEl.innerHTML = `<span class="day-num">${d} <small style="font-size:10px">${getMoon(d,m,y)}</small></span>
+                <div style="margin-top:auto">${tasks.slice(0,2).map(t => `<div style="font-size:8px; background:var(--accent); color:white; padding:2px; border-radius:3px; margin-top:2px; overflow:hidden">${t.time} ${t.desc}</div>`).join('')}</div>`;
             grid.appendChild(dayEl);
+            tasks.forEach(t => side.innerHTML += `<div class="agenda-item"><b>DIA ${d} • ${t.time}</b> ${t.desc}</div>`);
         }
-        monthTasks.sort((a,b) => a.day - b.day).forEach(t => {
-            sideAgenda.innerHTML += `<div class="agenda-item"><b>DIA ${t.day} • ${t.time}</b>${t.desc}</div>`;
-        });
     }
 
     function openM(key, d) {
         activeKey = key;
         document.getElementById('mDayTitle').innerText = `${d} de ${months[document.getElementById('selM').value]}`;
-        refreshTasks(); document.getElementById('ov').style.display = 'flex';
+        refreshTasks();
+        document.getElementById('ov').style.display = 'flex';
     }
 
     function refreshTasks() {
-        const list = document.getElementById('taskList'), tasks = (db[activeKey] || []).filter(t => t.mode === mode);
-        list.innerHTML = tasks.length ? tasks.map((t, i) => `<div style="background:white; padding:12px; border-radius:12px; margin-bottom:10px; border-left:5px solid var(--accent); display:flex; justify-content:space-between"><span><b>${t.time}</b> ${t.desc}</span><span onclick="del(${i})" style="cursor:pointer">✕</span></div>`).join('') : '<p>Vazio.</p>';
+        const list = document.getElementById('taskList'), tasks = (cloudData[activeKey] || []).filter(t => t.mode === mode);
+        list.innerHTML = tasks.length ? tasks.map((t, i) => `<div style="background:#f8fafc; padding:15px; border-radius:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center"><span><b>${t.time}</b> ${t.desc}</span><span onclick="del(${i})" style="cursor:pointer; color:#cbd5e1; font-weight:bold; padding:5px">✕</span></div>`).join('') : '<p style="text-align:center; color:#cbd5e1; padding-top:20px">Nada agendado.</p>';
     }
 
-    function save() {
+    async function save() {
         const desc = document.getElementById('fDesc').value, time = document.getElementById('fTime').value;
         if(!desc) return;
-        if(!db[activeKey]) db[activeKey] = [];
-        db[activeKey].push({ time, desc, mode });
-        localStorage.setItem('planner_pwa_v2', JSON.stringify(db));
-        document.getElementById('fDesc').value = ''; refreshTasks(); render();
+        const all = cloudData[activeKey] || [];
+        all.push({ time, desc, mode });
+        await db.collection("planner").doc(activeKey).set({ items: all });
+        document.getElementById('fDesc').value = '';
+        refreshTasks();
     }
 
-    function del(idx) {
-        let all = db[activeKey], filtered = all.filter(t => t.mode === mode);
-        db[activeKey] = all.filter(t => t !== filtered[idx]);
-        localStorage.setItem('planner_pwa_v2', JSON.stringify(db));
-        refreshTasks(); render();
+    async function del(idx) {
+        let all = cloudData[activeKey];
+        const filtered = all.filter(t => t.mode === mode);
+        all = all.filter(t => t !== filtered[idx]);
+        await db.collection("planner").doc(activeKey).set({ items: all });
+        refreshTasks();
     }
 
+    function setMode(m) { mode = m; document.body.className = `mode-${m}`; render(); }
     function closeM() { document.getElementById('ov').style.display = 'none'; }
+    function changeYear() { render(); }
+
     init();
 </script>
 </body>
