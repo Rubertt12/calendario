@@ -14,56 +14,65 @@
         :root { --work: #2563eb; --home: #db2777; --bg: #f8fafc; --accent: var(--home); }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        body { margin: 0; background: var(--bg); color: #1e293b; padding-bottom: 60px; }
+        body { margin: 0; background: var(--bg); color: #1e293b; padding-bottom: 90px; }
         body.mode-work { --accent: var(--work); --bg: #f1f5f9; }
         body.mode-home { --accent: var(--home); --bg: #fff1f2; }
 
         /* Login */
         #authScreen { position: fixed; inset: 0; background: white; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .auth-card { width: 100%; max-width: 380px; text-align: center; }
-        .auth-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; }
+        .input-group { position: relative; margin-bottom: 12px; }
+        .auth-card input { width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; outline: none; }
+        .eye-btn { position: absolute; right: 15px; top: 18px; border: none; background: none; cursor: pointer; font-size: 18px; color: #94a3b8; }
+        .auth-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; margin-top: 10px; }
 
         /* App Layout */
         .app-shell { display: grid; gap: 10px; padding: 10px; grid-template-columns: 1fr 300px; max-width: 1400px; margin: 0 auto; }
         @media (max-width: 900px) {
             .app-shell { grid-template-columns: 1fr; }
-            .sidebar { order: 2; margin-bottom: 80px; }
-            header { flex-direction: column; gap: 10px; }
+            header { flex-direction: column; gap: 12px; }
+            .sidebar { order: 2; }
         }
 
         header { grid-column: 1 / -1; background: white; border-radius: 20px; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        
         .main-cal { background: white; border-radius: 20px; padding: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
         .wk-day { text-align: center; color: #cbd5e1; font-weight: 900; font-size: 10px; padding: 5px 0; }
 
-        .day { background: #fff; border: 1px solid #f1f5f9; border-radius: 8px; padding: 4px; cursor: pointer; min-height: 90px; display: flex; flex-direction: column; position: relative; }
+        .day { background: #fff; border: 1px solid #f1f5f9; border-radius: 8px; padding: 4px; cursor: pointer; min-height: 95px; display: flex; flex-direction: column; position: relative; }
         .day.today { border: 2.5px solid var(--accent); }
         .day-num { font-weight: 900; font-size: 14px; display: flex; justify-content: space-between; }
-        
         .holiday-tag { font-size: 7px; color: #ef4444; font-weight: 800; background: #fee2e2; padding: 2px; border-radius: 3px; margin-top: 2px; text-transform: uppercase; }
 
-        /* LEGENDAS */
-        .legend-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 10px; display: flex; justify-content: center; gap: 15px; font-size: 10px; font-weight: 700; border-top: 1px solid #e2e8f0; z-index: 900; flex-wrap: wrap; }
-        .leg-item { display: flex; align-items: center; gap: 4px; }
-        .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
-
-        .sidebar { display: flex; flex-direction: column; gap: 10px; }
-        .side-card { background: white; border-radius: 20px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
         
+        /* Legenda */
+        .legend-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px; display: flex; justify-content: center; gap: 12px; font-size: 10px; font-weight: 700; border-top: 1px solid #e2e8f0; z-index: 900; flex-wrap: wrap; }
+        
+        /* Modal e Toasts */
         .ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: flex-end; }
         .modal { background: white; width: 100%; max-width: 500px; border-radius: 25px 25px 0 0; padding: 20px; }
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 25px; border-radius: 50px; font-size: 13px; font-weight: 700; display: none; z-index: 11000; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
 
+<div id="toast">Ação realizada!</div>
+
 <div id="authScreen">
     <div class="auth-card">
-        <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" width="60">
+        <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" width="50">
         <h2 style="margin: 10px 0">Planner Familiar</h2>
-        <input type="email" id="email" placeholder="E-mail" style="width:100%; padding:15px; border-radius:12px; border:2px solid #e2e8f0; margin-bottom:10px">
-        <input type="password" id="password" placeholder="Senha" style="width:100%; padding:15px; border-radius:12px; border:2px solid #e2e8f0; margin-bottom:10px">
-        <button class="auth-btn" onclick="handleAuth()">ENTRAR</button>
+        <div class="input-group">
+            <input type="email" id="email" placeholder="Seu e-mail cadastrado">
+        </div>
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Sua senha">
+            <button class="eye-btn" onclick="togglePass()">👁️</button>
+        </div>
+        <button class="auth-btn" onclick="handleAuth()">ENTRAR / CADASTRAR</button>
+        <button onclick="resetPass()" style="margin-top:20px; background:none; border:none; color:#2563eb; text-decoration:underline; cursor:pointer; font-size:13px; font-weight:700">Esqueci minha senha</button>
+        <p style="font-size:11px; color:#94a3b8; margin-top:10px;">(O link de recuperação chegará no seu e-mail)</p>
     </div>
 </div>
 
@@ -73,10 +82,11 @@
             <select id="selM" onchange="render()" style="font-size:18px; font-weight:900; border:none; background:none;"></select>
             <select id="selY" onchange="render()" style="background:var(--accent); color:white; border:none; padding:4px 8px; border-radius:6px; font-weight:900;"></select>
         </div>
-        <div id="wInfo" style="font-size:12px; font-weight:700">--° • ...</div>
-        <div style="display:flex; gap:10px">
-            <button onclick="setMode('work')" style="border:none; background:#f1f5f9; padding:10px; border-radius:12px;">💼 Trabalho</button>
-            <button onclick="setMode('home')" style="border:none; background:#f1f5f9; padding:10px; border-radius:12px;">🏠 Casa</button>
+        <div id="wInfo" style="font-size:11px; font-weight:700">--° • ...</div>
+        <div style="display:flex; gap:8px">
+            <button style="border:none; background:#f1f5f9; padding:10px; border-radius:12px; cursor:pointer" onclick="setMode('work')">💼</button>
+            <button style="border:none; background:#f1f5f9; padding:10px; border-radius:12px; cursor:pointer" onclick="setMode('home')">🏠</button>
+            <button onclick="logout()" style="border:none; background:#fff1f2; color:#ef4444; padding:10px; border-radius:12px; font-weight:800; cursor:pointer">Sair</button>
         </div>
     </header>
 
@@ -88,20 +98,20 @@
     </main>
 
     <aside class="sidebar">
-        <div class="side-card">
-            <b style="font-size:12px; color:#94a3b8">PLANOS DESTE MÊS:</b>
+        <div style="background:white; border-radius:20px; padding:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+            <b style="font-size:11px; color:#94a3b8">PLANOS DO MÊS:</b>
             <div id="sideAgenda" style="margin-top:10px"></div>
         </div>
     </aside>
 </div>
 
 <div class="legend-bar">
-    <div class="leg-item">🌑 Nova</div>
-    <div class="leg-item">🌓 Cresc.</div>
-    <div class="leg-item">🌕 Cheia</div>
-    <div class="leg-item">🌗 Mingu.</div>
-    <div class="leg-item"><span style="color:#ef4444">■</span> Feriado</div>
-    <div class="leg-item"><div class="dot"></div> Tarefa</div>
+    <div style="display:flex; align-items:center; gap:3px">🌑 Nova</div>
+    <div style="display:flex; align-items:center; gap:3px">🌓 Cresc.</div>
+    <div style="display:flex; align-items:center; gap:3px">🌕 Cheia</div>
+    <div style="display:flex; align-items:center; gap:3px">🌗 Mingu.</div>
+    <div style="display:flex; align-items:center; gap:3px"><span style="color:#ef4444">■</span> Feriado</div>
+    <div style="display:flex; align-items:center; gap:3px"><div class="dot"></div> Tarefa</div>
 </div>
 
 <div id="ov" class="ov" onclick="closeM()">
@@ -111,7 +121,7 @@
         <div style="display:flex; flex-direction:column; gap:10px">
             <input type="time" id="fTime" value="09:00" style="padding:12px; border-radius:12px; border:1px solid #e2e8f0">
             <textarea id="fDesc" placeholder="O que agendar?" rows="3" style="padding:12px; border-radius:12px; border:1px solid #e2e8f0; resize:none"></textarea>
-            <button class="auth-btn" onclick="save()">SALVAR NO CALENDÁRIO</button>
+            <button class="auth-btn" onclick="save()">SALVAR PLANO</button>
         </div>
     </div>
 </div>
@@ -132,11 +142,37 @@
 
     let mode = 'home';
     let cloudData = {};
+    let activeKey = "";
     const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
     const holidays = { "1-0-2026": "Ano Novo", "16-1-2026": "Carnaval", "17-1-2026": "Carnaval", "3-3-2026": "Sexta Paixão", "21-3-2026": "Tiradentes", "1-4-2026": "Dia do Trabalho", "4-5-2026": "Corpus Christi", "7-8-2026": "Independência", "12-9-2026": "Nsa. Aparecida", "2-10-2026": "Finados", "15-10-2026": "Procl. República", "20-10-2026": "Consciência Negra", "25-11-2026": "Natal" };
 
+    function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 4000); }
+
+    // FUNÇÃO CORRIGIDA DE RECUPERAÇÃO
+    function resetPass() {
+        const emailInput = document.getElementById('email').value;
+        if(!emailInput) {
+            alert("Por favor, digite seu e-mail no campo acima antes de clicar em recuperar.");
+            return;
+        }
+        
+        auth.sendPasswordResetEmail(emailInput)
+            .then(() => {
+                showToast("Sucesso! Verifique seu e-mail para trocar a senha.");
+                alert("Enviamos um link para: " + emailInput + ". Olhe também sua caixa de Spam.");
+            })
+            .catch((error) => {
+                if(error.code === 'auth/user-not-found') {
+                    alert("Este e-mail não está cadastrado no sistema.");
+                } else {
+                    alert("Erro ao enviar: " + error.message);
+                }
+            });
+    }
+
     function handleAuth() {
         const e = document.getElementById('email').value, p = document.getElementById('password').value;
+        if(!e || !p) return alert("Preencha os dois campos.");
         auth.signInWithEmailAndPassword(e, p).catch(() => auth.createUserWithEmailAndPassword(e, p));
     }
 
@@ -150,9 +186,12 @@
                 render();
             });
             fetchWeather();
-        } else { document.getElementById('authScreen').style.display = 'flex'; }
+        } else {
+            document.getElementById('authScreen').style.display = 'flex';
+        }
     });
 
+    // Lógica do Calendário (render, getMoon, fetchWeather, etc.) continua igual...
     async function fetchWeather() {
         try {
             const loc = await (await fetch('https://ipapi.co/json/')).json();
@@ -177,37 +216,35 @@
         const m = parseInt(document.getElementById('selM').value), y = parseInt(document.getElementById('selY').value);
         grid.innerHTML = ''; side.innerHTML = '';
         const first = new Date(y, m, 1).getDay(), last = new Date(y, m+1, 0).getDate();
-
         for(let i=0; i<first; i++) grid.innerHTML += `<div></div>`;
-
         for(let d=1; d<=last; d++) {
             const key = `${d}-${m}-${y}`;
             const tasks = (cloudData[key] || []).filter(t => t.mode === mode);
             const holiday = holidays[key];
             const dayEl = document.createElement('div');
-            dayEl.className = `day ${new Date().getDate()==d && new Date().getMonth()==m ? 'today' : ''}`;
+            dayEl.className = `day ${new Date().getDate()==d && new Date().getMonth()==m && new Date().getFullYear()==y ? 'today' : ''}`;
             dayEl.onclick = () => openM(key, d);
-            dayEl.innerHTML = `
-                <div class="day-num">${d} <span>${getMoon(d,m,y)}</span></div>
+            dayEl.innerHTML = `<div class="day-num">${d} <span>${getMoon(d,m,y)}</span></div>
                 ${holiday ? `<div class="holiday-tag">${holiday}</div>` : ''}
-                <div style="margin-top:auto; display:flex; gap:2px">${tasks.map(() => `<div class="dot"></div>`).join('')}</div>
-            `;
+                <div style="margin-top:auto; display:flex; gap:2px">${tasks.map(() => `<div class="dot"></div>`).join('')}</div>`;
             grid.appendChild(dayEl);
             tasks.forEach(t => side.innerHTML += `<div style="font-size:12px; margin-bottom:8px; border-left:3px solid var(--accent); padding-left:8px"><b>Dia ${d}:</b> ${t.desc}</div>`);
         }
     }
 
     function openM(key, d) { activeKey = key; document.getElementById('mDayTitle').innerText = `${d} de ${months[document.getElementById('selM').value]}`; refreshTasks(); document.getElementById('ov').style.display = 'flex'; }
-    function refreshTasks() { const list = document.getElementById('taskList'), tasks = (cloudData[activeKey] || []).filter(t => t.mode === mode); list.innerHTML = tasks.map((t, i) => `<div style="background:#f8fafc; padding:10px; border-radius:10px; margin-bottom:5px; display:flex; justify-content:space-between"><span>${t.time} - ${t.desc}</span><span onclick="del(${i})" style="color:red; cursor:pointer">✕</span></div>`).join('') || 'Vazio'; }
-    async function save() { const desc = document.getElementById('fDesc').value, time = document.getElementById('fTime').value; if(!desc) return; const all = cloudData[activeKey] || []; all.push({ time, desc, mode }); await db.collection("planner").doc(activeKey).set({ items: all }); document.getElementById('fDesc').value = ''; refreshTasks(); }
+    function refreshTasks() { const list = document.getElementById('taskList'), tasks = (cloudData[activeKey] || []).filter(t => t.mode === mode); list.innerHTML = tasks.map((t, i) => `<div style="background:#f8fafc; padding:10px; border-radius:10px; margin-bottom:5px; display:flex; justify-content:space-between"><span>${t.time} - ${t.desc}</span><span onclick="del(${i})" style="color:red; cursor:pointer">✕</span></div>`).join('') || 'Sem planos.'; }
+    async function save() { const desc = document.getElementById('fDesc').value, time = document.getElementById('fTime').value; if(!desc) return; const all = cloudData[activeKey] || []; all.push({ time, desc, mode }); await db.collection("planner").doc(activeKey).set({ items: all }); showToast("Salvo!"); document.getElementById('fDesc').value = ''; refreshTasks(); }
     async function del(idx) { let all = cloudData[activeKey]; const filtered = all.filter(t => t.mode === mode); all = all.filter(t => t !== filtered[idx]); await db.collection("planner").doc(activeKey).set({ items: all }); refreshTasks(); }
     function setMode(m) { mode = m; document.body.className = `mode-${m}`; render(); }
     function closeM() { document.getElementById('ov').style.display = 'none'; }
-    
+    function logout() { auth.signOut(); }
+    function togglePass() { const p = document.getElementById('password'); p.type = p.type === 'password' ? 'text' : 'password'; }
+
     const sM = document.getElementById('selM'), sY = document.getElementById('selY');
     months.forEach((m,i) => sM.innerHTML += `<option value="${i}">${m}</option>`);
     for(let y=2024; y<=2030; y++) sY.innerHTML += `<option value="${y}">${y}</option>`;
-    sM.value = new Date().getMonth(); sY.value = 2026;
+    sM.value = new Date().getMonth(); sY.value = new Date().getFullYear();
     render();
 </script>
 </body>
