@@ -11,19 +11,42 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --work: #2563eb; --home: #db2777; --bg: #f8fafc; --accent: var(--home); }
+        :root { 
+            --work: #2563eb; 
+            --home: #db2777; 
+            --bg: #f8fafc; 
+            --accent: var(--home); 
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #94a3b8;
+            --border: #f1f5f9;
+        }
+
+        /* Suporte ao Dark Mode do Sistema */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f172a;
+                --card-bg: #1e293b;
+                --text-main: #f1f5f9;
+                --text-sub: #94a3b8;
+                --border: #334155;
+            }
+            body.mode-work { --bg: #020617; }
+            body.mode-home { --bg: #1a0a0f; }
+        }
+
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        body { margin: 0; background: var(--bg); color: #1e293b; padding-bottom: 100px; }
-        body.mode-work { --accent: var(--work); --bg: #f1f5f9; }
-        body.mode-home { --accent: var(--home); --bg: #fff1f2; }
+        body { margin: 0; background: var(--bg); color: var(--text-main); padding-bottom: 100px; transition: background 0.3s ease; }
+        body.mode-work { --accent: var(--work); }
+        body.mode-home { --accent: var(--home); }
 
         /* Login */
-        #authScreen { position: fixed; inset: 0; background: white; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        #authScreen { position: fixed; inset: 0; background: var(--card-bg); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .auth-card { width: 100%; max-width: 380px; text-align: center; }
         .input-group { position: relative; margin-bottom: 12px; }
-        .auth-card input { width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; outline: none; width: 100%; }
-        .eye-btn { position: absolute; right: 15px; top: 18px; border: none; background: none; cursor: pointer; font-size: 18px; color: #94a3b8; }
+        .auth-card input { width: 100%; padding: 16px; border: 2px solid var(--border); background: var(--bg); color: var(--text-main); border-radius: 12px; font-size: 16px; outline: none; }
+        .eye-btn { position: absolute; right: 15px; top: 18px; border: none; background: none; cursor: pointer; font-size: 18px; color: var(--text-sub); }
         .auth-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; margin-top: 10px; }
 
         /* Layout */
@@ -33,27 +56,30 @@
             header { flex-direction: column; gap: 15px; text-align: center; }
         }
 
-        header { grid-column: 1 / -1; background: white; border-radius: 20px; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        #wInfo { font-size: 13px; font-weight: 800; color: #475569; background: #f1f5f9; padding: 6px 14px; border-radius: 50px; }
+        header { grid-column: 1 / -1; background: var(--card-bg); border-radius: 20px; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        #wInfo { font-size: 13px; font-weight: 800; color: var(--text-main); background: var(--border); padding: 6px 14px; border-radius: 50px; }
 
-        .main-cal { background: white; border-radius: 20px; padding: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .main-cal { background: var(--card-bg); border-radius: 20px; padding: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-        .wk-day { text-align: center; color: #cbd5e1; font-weight: 900; font-size: 10px; padding: 5px 0; }
+        .wk-day { text-align: center; color: var(--text-sub); font-weight: 900; font-size: 10px; padding: 5px 0; }
         
-        .day { background: #fff; border: 1px solid #f1f5f9; border-radius: 8px; padding: 4px; cursor: pointer; min-height: 95px; display: flex; flex-direction: column; position: relative; }
+        .day { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 4px; cursor: pointer; min-height: 95px; display: flex; flex-direction: column; position: relative; }
         .day.today { border: 2.5px solid var(--accent); }
         .day-num { font-weight: 900; font-size: 14px; display: flex; justify-content: space-between; }
         
-        .holiday-tag { font-size: 8px; color: #ef4444; font-weight: 800; background: #fee2e2; padding: 2px 4px; border-radius: 4px; margin-top: 2px; text-transform: uppercase; line-height: 1; }
+        .holiday-tag { font-size: 8px; color: #ef4444; font-weight: 800; background: rgba(239, 68, 68, 0.1); padding: 2px 4px; border-radius: 4px; margin-top: 2px; text-transform: uppercase; line-height: 1; }
         .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 
         /* Sidebar Containers */
-        .sidebar-card { background: white; border-radius: 20px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin-bottom: 10px; }
-        .sidebar-title { font-size: 11px; color: #94a3b8; font-weight: 900; letter-spacing: 1px; display: block; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; }
+        .sidebar-card { background: var(--card-bg); border-radius: 20px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px; }
+        .sidebar-title { font-size: 11px; color: var(--text-sub); font-weight: 900; letter-spacing: 1px; display: block; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
 
-        .legend-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px; display: flex; justify-content: center; gap: 12px; font-size: 10px; font-weight: 700; border-top: 1px solid #e2e8f0; z-index: 900; flex-wrap: wrap; }
-        .ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: flex-end; }
-        .modal { background: white; width: 100%; max-width: 500px; border-radius: 25px 25px 0 0; padding: 20px; }
+        .legend-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); padding: 12px; display: flex; justify-content: center; gap: 12px; font-size: 10px; font-weight: 700; border-top: 1px solid var(--border); z-index: 900; flex-wrap: wrap; }
+        .ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: flex-end; }
+        .modal { background: var(--card-bg); width: 100%; max-width: 500px; border-radius: 25px 25px 0 0; padding: 20px; }
+
+        /* Ajuste em inputs para dark mode */
+        select, textarea, input[type="time"] { background: var(--bg); color: var(--text-main); border: 1px solid var(--border); }
     </style>
 </head>
 <body>
@@ -64,7 +90,7 @@
         <div class="input-group"><input type="email" id="email" placeholder="E-mail"></div>
         <div class="input-group"><input type="password" id="password" placeholder="Senha"></div>
         <button class="auth-btn" onclick="handleAuth()">ENTRAR</button>
-        <button onclick="resetPass()" style="margin-top:15px; background:none; border:none; color:#2563eb; text-decoration:underline; font-size:12px; cursor:pointer">Esqueci a senha</button>
+        <button onclick="resetPass()" style="margin-top:15px; background:none; border:none; color:var(--work); text-decoration:underline; font-size:12px; cursor:pointer">Esqueci a senha</button>
     </div>
 </div>
 
@@ -112,13 +138,14 @@
     <div class="modal" onclick="event.stopPropagation()">
         <h3 id="mDayTitle" style="margin-top:0">Data</h3>
         <div id="taskList" style="max-height: 150px; overflow-y: auto; margin-bottom: 15px;"></div>
-        <input type="time" id="fTime" value="09:00" style="width:100%; padding:12px; margin-bottom:10px; border-radius:12px; border:1px solid #e2e8f0">
-        <textarea id="fDesc" placeholder="O que agendar?" rows="3" style="width:100%; padding:12px; border-radius:12px; border:1px solid #e2e8f0; resize:none"></textarea>
+        <input type="time" id="fTime" value="09:00" style="width:100%; padding:12px; margin-bottom:10px; border-radius:12px;">
+        <textarea id="fDesc" placeholder="O que agendar?" rows="3" style="width:100%; padding:12px; border-radius:12px; resize:none"></textarea>
         <button class="auth-btn" onclick="save()">SALVAR NO CALENDÁRIO</button>
     </div>
 </div>
 
 <script>
+    // Configurações do Firebase (mantenha as suas originais aqui)
     const firebaseConfig = {
         apiKey: "AIzaSyBP0RFIOKHETENleBmab90O6c1IOcl-IeQ",
         authDomain: "planner-familiar-6637d.firebaseapp.com",
@@ -137,7 +164,6 @@
     let activeKey = "";
     const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
     
-    // Lista completa de Feriados 2026
     const holidays = { 
         "1-0-2026": "Ano Novo", "16-1-2026": "Carnaval", "17-1-2026": "Carnaval", 
         "3-3-2026": "Sexta Paixão", "5-3-2026": "Páscoa", "21-3-2026": "Tiradentes", 
@@ -219,22 +245,29 @@
             `;
             grid.appendChild(dayEl);
             
-            // Alimenta a lista lateral de planos
             tasks.forEach(t => side.innerHTML += `<div style="font-size:12px; margin-bottom:8px; border-left:3px solid var(--accent); padding-left:8px"><b>Dia ${d}:</b> ${t.desc}</div>`);
             
-            // Alimenta a nova lista lateral de feriados
             if(holiday) {
                 foundHolidays = true;
-                sideH.innerHTML += `<div style="font-size:12px; margin-bottom:8px; color:#475569"><b>Dia ${d}:</b> ${holiday}</div>`;
+                sideH.innerHTML += `<div style="font-size:12px; margin-bottom:8px; color:var(--text-main)"><b>Dia ${d}:</b> ${holiday}</div>`;
             }
         }
         
-        if(!foundHolidays) sideH.innerHTML = '<div style="font-size:11px; color:#94a3b8">Nenhum feriado este mês.</div>';
-        if(side.innerHTML === '') side.innerHTML = '<div style="font-size:11px; color:#94a3b8">Nenhum plano anotado.</div>';
+        if(!foundHolidays) sideH.innerHTML = `<div style="font-size:11px; color:var(--text-sub)">Nenhum feriado este mês.</div>`;
+        if(side.innerHTML === '') side.innerHTML = `<div style="font-size:11px; color:var(--text-sub)">Nenhum plano anotado.</div>`;
     }
 
     function openM(key, d) { activeKey = key; document.getElementById('mDayTitle').innerText = `${d} de ${months[document.getElementById('selM').value]}`; refreshTasks(); document.getElementById('ov').style.display = 'flex'; }
-    function refreshTasks() { const list = document.getElementById('taskList'), tasks = (cloudData[activeKey] || []).filter(t => t.mode === mode); list.innerHTML = tasks.map((t, i) => `<div style="background:#f8fafc; padding:10px; border-radius:10px; margin-bottom:5px; display:flex; justify-content:space-between"><span>${t.time} - ${t.desc}</span><span onclick="del(${i})" style="color:red; cursor:pointer">✕</span></div>`).join('') || 'Sem planos.'; }
+    
+    function refreshTasks() { 
+        const list = document.getElementById('taskList'), tasks = (cloudData[activeKey] || []).filter(t => t.mode === mode); 
+        list.innerHTML = tasks.map((t, i) => `
+            <div style="background:var(--border); padding:10px; border-radius:10px; margin-bottom:5px; display:flex; justify-content:space-between">
+                <span>${t.time} - ${t.desc}</span>
+                <span onclick="del(${i})" style="color:#ef4444; cursor:pointer; font-weight:bold">✕</span>
+            </div>`).join('') || 'Sem planos.'; 
+    }
+
     async function save() { const desc = document.getElementById('fDesc').value, time = document.getElementById('fTime').value; if(!desc) return; const all = cloudData[activeKey] || []; all.push({ time, desc, mode }); await db.collection("planner").doc(activeKey).set({ items: all }); document.getElementById('fDesc').value = ''; refreshTasks(); }
     async function del(idx) { let all = cloudData[activeKey]; const filtered = all.filter(t => t.mode === mode); all = all.filter(t => t !== filtered[idx]); await db.collection("planner").doc(activeKey).set({ items: all }); refreshTasks(); }
     function setMode(m) { mode = m; document.body.className = `mode-${m}`; render(); }
