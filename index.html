@@ -22,7 +22,6 @@
             --border: #f1f5f9;
         }
 
-        /* Suporte ao Dark Mode do Sistema */
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg: #0f172a;
@@ -41,15 +40,12 @@
         body.mode-work { --accent: var(--work); }
         body.mode-home { --accent: var(--home); }
 
-        /* Login */
         #authScreen { position: fixed; inset: 0; background: var(--card-bg); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .auth-card { width: 100%; max-width: 380px; text-align: center; }
         .input-group { position: relative; margin-bottom: 12px; }
         .auth-card input { width: 100%; padding: 16px; border: 2px solid var(--border); background: var(--bg); color: var(--text-main); border-radius: 12px; font-size: 16px; outline: none; }
-        .eye-btn { position: absolute; right: 15px; top: 18px; border: none; background: none; cursor: pointer; font-size: 18px; color: var(--text-sub); }
         .auth-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; margin-top: 10px; }
 
-        /* Layout */
         .app-shell { display: grid; gap: 10px; padding: 10px; grid-template-columns: 1fr 300px; max-width: 1400px; margin: 0 auto; }
         @media (max-width: 900px) {
             .app-shell { grid-template-columns: 1fr; }
@@ -70,7 +66,6 @@
         .holiday-tag { font-size: 8px; color: #ef4444; font-weight: 800; background: rgba(239, 68, 68, 0.1); padding: 2px 4px; border-radius: 4px; margin-top: 2px; text-transform: uppercase; line-height: 1; }
         .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 
-        /* Sidebar Containers */
         .sidebar-card { background: var(--card-bg); border-radius: 20px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px; }
         .sidebar-title { font-size: 11px; color: var(--text-sub); font-weight: 900; letter-spacing: 1px; display: block; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
 
@@ -78,8 +73,7 @@
         .ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: flex-end; }
         .modal { background: var(--card-bg); width: 100%; max-width: 500px; border-radius: 25px 25px 0 0; padding: 20px; }
 
-        /* Ajuste em inputs para dark mode */
-        select, textarea, input[type="time"] { background: var(--bg); color: var(--text-main); border: 1px solid var(--border); }
+        select, textarea, input[type="time"] { background: var(--bg); color: var(--text-main); border: 1px solid var(--border); width:100%; padding:12px; border-radius:12px; margin-bottom:10px; }
     </style>
 </head>
 <body>
@@ -89,7 +83,7 @@
         <h2 style="margin: 0 0 20px 0">Planner Familiar</h2>
         <div class="input-group"><input type="email" id="email" placeholder="E-mail"></div>
         <div class="input-group"><input type="password" id="password" placeholder="Senha"></div>
-        <button class="auth-btn" onclick="handleAuth()">ENTRAR</button>
+        <button class="auth-btn" onclick="handleAuth()">ENTRAR E ATIVAR NOTIFICAÇÕES</button>
         <button onclick="resetPass()" style="margin-top:15px; background:none; border:none; color:var(--work); text-decoration:underline; font-size:12px; cursor:pointer">Esqueci a senha</button>
     </div>
 </div>
@@ -97,8 +91,8 @@
 <div class="app-shell" id="appMain" style="display:none">
     <header>
         <div>
-            <select id="selM" onchange="render()" style="font-size:18px; font-weight:900; border:none; background:none;"></select>
-            <select id="selY" onchange="render()" style="background:var(--accent); color:white; border:none; padding:4px 8px; border-radius:6px; font-weight:900;"></select>
+            <select id="selM" onchange="render()" style="font-size:18px; font-weight:900; border:none; background:none; width:auto;"></select>
+            <select id="selY" onchange="render()" style="background:var(--accent); color:white; border:none; padding:4px 8px; border-radius:6px; font-weight:900; width:auto;"></select>
         </div>
         <div id="wInfo">Buscando clima...</div>
         <div style="display:flex; gap:8px">
@@ -120,7 +114,6 @@
             <b class="sidebar-title">PLANOS DO MÊS:</b>
             <div id="sideAgenda"></div>
         </div>
-
         <div class="sidebar-card" style="border-left: 4px solid #ef4444;">
             <b class="sidebar-title" style="color:#ef4444">FERIADOS DESTE MÊS:</b>
             <div id="sideHolidays"></div>
@@ -138,14 +131,25 @@
     <div class="modal" onclick="event.stopPropagation()">
         <h3 id="mDayTitle" style="margin-top:0">Data</h3>
         <div id="taskList" style="max-height: 150px; overflow-y: auto; margin-bottom: 15px;"></div>
-        <input type="time" id="fTime" value="09:00" style="width:100%; padding:12px; margin-bottom:10px; border-radius:12px;">
-        <textarea id="fDesc" placeholder="O que agendar?" rows="3" style="width:100%; padding:12px; border-radius:12px; resize:none"></textarea>
+        
+        <label style="font-size:11px; font-weight:900">HORÁRIO:</label>
+        <input type="time" id="fTime" value="09:00">
+        
+        <label style="font-size:11px; font-weight:900">NOTIFICAR QUANDO?</label>
+        <select id="fNotify">
+            <option value="0">Na hora exata</option>
+            <option value="15">15 minutos antes</option>
+            <option value="60">1 hora antes</option>
+            <option value="120">2 horas antes</option>
+        </select>
+
+        <textarea id="fDesc" placeholder="O que agendar?" rows="3"></textarea>
         <button class="auth-btn" onclick="save()">SALVAR NO CALENDÁRIO</button>
+        <button onclick="requestNotif()" style="width:100%; background:none; border:none; color:var(--text-sub); font-size:10px; margin-top:10px; cursor:pointer">Reativar Pop-up de Notificação</button>
     </div>
 </div>
 
 <script>
-    // Configurações do Firebase (mantenha as suas originais aqui)
     const firebaseConfig = {
         apiKey: "AIzaSyBP0RFIOKHETENleBmab90O6c1IOcl-IeQ",
         authDomain: "planner-familiar-6637d.firebaseapp.com",
@@ -162,6 +166,7 @@
     let mode = 'home';
     let cloudData = {};
     let activeKey = "";
+    let alreadyNotified = new Set();
     const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
     
     const holidays = { 
@@ -171,6 +176,51 @@
         "12-9-2026": "Nsa. Aparecida", "2-10-2026": "Finados", "15-10-2026": "Procl. República", 
         "20-10-2026": "Consciência Negra", "25-11-2026": "Natal" 
     };
+
+    // Função para pedir o Pop-up de Permissão
+    function requestNotif() {
+        if (!("Notification" in window)) {
+            alert("Este dispositivo não suporta notificações.");
+            return;
+        }
+        Notification.requestPermission().then(perm => {
+            if(perm === 'granted') {
+                new Notification("Sucesso!", { body: "As notificações do Planner Rubertt estão ativas." });
+            } else {
+                alert("Você precisa autorizar as notificações no ícone de CADEADO ao lado do endereço do site.");
+            }
+        });
+    }
+
+    // Função que checa os horários e manda a notificação
+    function monitorTasks() {
+        const agora = new Date();
+        const key = `${agora.getDate()}-${agora.getMonth()}-${agora.getFullYear()}`;
+        const planos = cloudData[key] || [];
+
+        planos.forEach(p => {
+            if(!p.time) return;
+            const [h, m] = p.time.split(':');
+            const dataEvento = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), h, m);
+            const antecedencia = parseInt(p.notifyBefore || 0) * 60000;
+            const tempoAviso = new Date(dataEvento.getTime() - antecedencia);
+
+            const id = `${key}-${p.time}-${p.desc}`;
+
+            // Se agora for o momento de avisar e ainda não avisamos
+            if (agora >= tempoAviso && agora < dataEvento && !alreadyNotified.has(id)) {
+                if (Notification.permission === "granted") {
+                    new Notification("Lembrete: " + p.desc, {
+                        body: "Horário: " + p.time,
+                        icon: "https://cdn-icons-png.flaticon.com/512/3652/3652191.png"
+                    });
+                    alreadyNotified.add(id);
+                }
+            }
+        });
+    }
+
+    setInterval(monitorTasks, 30000); // Checa a cada 30 segundos
 
     function fetchWeather() {
         const info = document.getElementById('wInfo');
@@ -184,6 +234,7 @@
     }
 
     function handleAuth() {
+        requestNotif(); // Tenta abrir o pop-up no momento do clique
         const e = document.getElementById('email').value, p = document.getElementById('password').value;
         if(e && p) auth.signInWithEmailAndPassword(e, p).catch(() => auth.createUserWithEmailAndPassword(e, p));
     }
@@ -245,7 +296,7 @@
             `;
             grid.appendChild(dayEl);
             
-            tasks.forEach(t => side.innerHTML += `<div style="font-size:12px; margin-bottom:8px; border-left:3px solid var(--accent); padding-left:8px"><b>Dia ${d}:</b> ${t.desc}</div>`);
+            tasks.forEach(t => side.innerHTML += `<div style="font-size:12px; margin-bottom:8px; border-left:3px solid var(--accent); padding-left:8px"><b>Dia ${d}:</b> ${t.desc} (${t.time})</div>`);
             
             if(holiday) {
                 foundHolidays = true;
@@ -268,7 +319,18 @@
             </div>`).join('') || 'Sem planos.'; 
     }
 
-    async function save() { const desc = document.getElementById('fDesc').value, time = document.getElementById('fTime').value; if(!desc) return; const all = cloudData[activeKey] || []; all.push({ time, desc, mode }); await db.collection("planner").doc(activeKey).set({ items: all }); document.getElementById('fDesc').value = ''; refreshTasks(); }
+    async function save() { 
+        const desc = document.getElementById('fDesc').value;
+        const time = document.getElementById('fTime').value;
+        const notifyBefore = document.getElementById('fNotify').value;
+        if(!desc) return; 
+        const all = cloudData[activeKey] || []; 
+        all.push({ time, desc, mode, notifyBefore }); 
+        await db.collection("planner").doc(activeKey).set({ items: all }); 
+        document.getElementById('fDesc').value = ''; 
+        refreshTasks(); 
+    }
+
     async function del(idx) { let all = cloudData[activeKey]; const filtered = all.filter(t => t.mode === mode); all = all.filter(t => t !== filtered[idx]); await db.collection("planner").doc(activeKey).set({ items: all }); refreshTasks(); }
     function setMode(m) { mode = m; document.body.className = `mode-${m}`; render(); }
     function closeM() { document.getElementById('ov').style.display = 'none'; }
